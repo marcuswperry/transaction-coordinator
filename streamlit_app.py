@@ -1,6 +1,5 @@
-
-
 import streamlit as st
+from streamlit.runtime.secrets import secrets
 import os
 import tempfile
 import json
@@ -14,10 +13,20 @@ st.set_page_config(page_title="AI Transaction Coordinator", layout="centered")
 st.title("📄 AI Transaction Coordinator")
 st.markdown("Upload a real estate contract (PDF), extract key dates, and sync to Google Calendar.")
 
-# File upload
+parsed = None
+use_sample_json = st.checkbox("💾 Load sample JSON instead of using GPT")
+
+if use_sample_json:
+    uploaded_json = st.file_uploader("Upload a sample contract JSON", type="json", key="json")
+    if uploaded_json:
+        parsed = json.load(uploaded_json)
+        st.success("✅ Loaded sample JSON!")
+        st.subheader("📋 Extracted Fields")
+        st.json(parsed)
+
 uploaded_file = st.file_uploader("Choose a contract PDF", type="pdf")
 
-if uploaded_file is not None:
+if not use_sample_json and uploaded_file:
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
         temp_file.write(uploaded_file.read())
         temp_path = temp_file.name
@@ -34,19 +43,17 @@ if uploaded_file is not None:
         st.subheader("📋 Extracted Fields")
         st.json(parsed)
 
-        # Option to download JSON
         st.download_button("📥 Download JSON", data=json.dumps(parsed, indent=2), file_name="contract_output.json")
-
-        # Option to add to Google Calendar
-        if st.button("🗓️ Add Dates to Google Calendar"):
-            try_add_event("Closing Date", parsed.get("Closing Date"))
-            try_add_event("Inspection Deadline", parsed.get("Inspection Deadline"))
-            try_add_event("Financing Deadline", parsed.get("Financing Deadline"))
-
-            other_dates = parsed.get("Other Important Dates", {})
-            if isinstance(other_dates, dict):
-                for label, date in other_dates.items():
-                    try_add_event(label, date)
-            st.success("✅ Events sent to your Google Calendar.")
     except Exception as e:
         st.error(f"❌ Failed to process contract: {e}")
+
+if parsed and st.button("🗓️ Add Dates to Google Calendar"):
+    try_add_event("Closing Date", parsed.get("Closing Date"))
+    try_add_event("Inspection Deadline", parsed.get("Inspection Deadline"))
+    try_add_event("Financing Deadline", parsed.get("Financing Deadline"))
+
+    other_dates = parsed.get("Other Important Dates", {})
+    if isinstance(other_dates, dict):
+        for label, date in other_dates.items():
+            try_add_event(label, date)
+    st.success("✅ Events sent to your Google Calendar.")
