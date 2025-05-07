@@ -27,7 +27,7 @@ def add_event_to_calendar(summary, date_str):
         client_config, SCOPES, redirect_uri=client_config["installed"]["redirect_uris"][0]
     )
 
-    query_params = st.experimental_get_query_params()
+    query_params = st.query_params
     if "code" not in query_params:
         auth_url, _ = flow.authorization_url(prompt='consent')
         st.markdown(f"[Click here to authorize Google Calendar access]({auth_url})")
