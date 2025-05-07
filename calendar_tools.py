@@ -24,7 +24,7 @@ def add_event_to_calendar(summary, date_str):
     }
 
     flow = InstalledAppFlow.from_client_config(client_config, SCOPES)
-    creds = flow.run_local_server(port=0)
+    creds = flow.run_console()
 
     service = build("calendar", "v3", credentials=creds)
 
