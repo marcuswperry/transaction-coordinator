@@ -11,18 +11,20 @@ SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
 def add_event_to_calendar(summary, date_str):
     """Add an all-day event to Google Calendar using ISO date format (YYYY-MM-DD)."""
 
-    # Authenticate
-    creds = None
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open("token.json", "w") as token:
-            token.write(creds.to_json())
+    import streamlit as st
+
+    client_config = {
+        "installed": {
+            "client_id": st.secrets["GOOGLE_CLIENT_ID"],
+            "client_secret": st.secrets["GOOGLE_CLIENT_SECRET"],
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "redirect_uris": ["http://localhost"]
+        }
+    }
+
+    flow = InstalledAppFlow.from_client_config(client_config, SCOPES)
+    creds = flow.run_local_server(port=0)
 
     service = build("calendar", "v3", credentials=creds)
 
