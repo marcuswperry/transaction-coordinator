@@ -23,28 +23,29 @@ if use_sample_json:
         st.subheader("📋 Extracted Fields")
         st.json(parsed)
 
-uploaded_file = st.file_uploader("Choose a contract PDF", type="pdf")
+if not use_sample_json:
+    uploaded_file = st.file_uploader("Choose a contract PDF", type="pdf")
 
-if not use_sample_json and uploaded_file:
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-        temp_file.write(uploaded_file.read())
-        temp_path = temp_file.name
+    if uploaded_file:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+            temp_file.write(uploaded_file.read())
+            temp_path = temp_file.name
 
-    st.success("✅ File uploaded. Extracting text...")
-    text = extract_text_from_pdf(temp_path)
+        st.success("✅ File uploaded. Extracting text...")
+        text = extract_text_from_pdf(temp_path)
 
-    with st.spinner("🧠 Sending to OpenAI..."):
-        gpt_output = analyze_contract_with_gpt(text)
+        with st.spinner("🧠 Sending to OpenAI..."):
+            gpt_output = analyze_contract_with_gpt(text)
 
-    try:
-        parsed = extract_json_from_gpt_response(gpt_output)
-        st.success("✅ Contract analyzed successfully!")
-        st.subheader("📋 Extracted Fields")
-        st.json(parsed)
+        try:
+            parsed = extract_json_from_gpt_response(gpt_output)
+            st.success("✅ Contract analyzed successfully!")
+            st.subheader("📋 Extracted Fields")
+            st.json(parsed)
 
-        st.download_button("📥 Download JSON", data=json.dumps(parsed, indent=2), file_name="contract_output.json")
-    except Exception as e:
-        st.error(f"❌ Failed to process contract: {e}")
+            st.download_button("📥 Download JSON", data=json.dumps(parsed, indent=2), file_name="contract_output.json")
+        except Exception as e:
+            st.error(f"❌ Failed to process contract: {e}")
 
 if parsed and st.button("🗓️ Add Dates to Google Calendar"):
     try_add_event("Closing Date", parsed.get("Closing Date"))
