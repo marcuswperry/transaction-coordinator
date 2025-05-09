@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
+from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 
@@ -23,9 +23,10 @@ def add_event_to_calendar(summary, date_str):
         }
     }
 
-    flow = InstalledAppFlow.from_client_config(
-        client_config, SCOPES, redirect_uri=client_config["installed"]["redirect_uris"][0]
+    flow = Flow.from_client_config(
+        client_config, SCOPES
     )
+    flow.redirect_uri = client_config["installed"]["redirect_uris"][0]
 
     query_params = st.query_params
     if "code" not in query_params:
