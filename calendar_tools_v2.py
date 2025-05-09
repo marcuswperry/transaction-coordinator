@@ -12,14 +12,24 @@ def get_google_credentials():
         creds = st.session_state['credentials']
     else:
         creds = None
+
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
+            st.session_state['credentials'] = creds
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        st.session_state['credentials'] = creds
+            if 'code' in st.experimental_get_query_params():
+                code = st.experimental_get_query_params()['code'][0]
+                flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+                flow.fetch_token(code=code)
+                creds = flow.credentials
+                st.session_state['credentials'] = creds
+                st.experimental_set_query_params()  # Clear query params
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+                auth_url, _ = flow.authorization_url(prompt='consent')
+                st.markdown(f"Please [authorize]({auth_url}) to continue.")
+                st.stop()
     return creds
 
 def create_event(summary, date_str):
