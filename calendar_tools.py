@@ -38,6 +38,12 @@ def add_event_to_calendar(summary, date_str):
     code = query_params["code"][0]
     flow.fetch_token(code=code)
     creds = flow.credentials
+    from google.oauth2 import id_token
+    from google.auth.transport import requests
+    info = id_token.verify_oauth2_token(
+        creds.id_token, requests.Request(), st.secrets["GOOGLE_CLIENT_ID"]
+    )
+    print("📧 Google account authorized:", info["email"])
 
     service = build("calendar", "v3", credentials=creds)
 
