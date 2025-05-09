@@ -19,17 +19,18 @@ def add_event_to_calendar(summary, date_str):
             "client_secret": st.secrets["GOOGLE_CLIENT_SECRET"],
             "auth_uri": "https://accounts.google.com/o/oauth2/auth",
             "token_uri": "https://oauth2.googleapis.com/token",
-            "redirect_uris": ["https://marcuswperry-transaction-coordinator.streamlit.app"]
+            "redirect_uris": ["https://transaction-coordinator.streamlit.app"]
         }
     }
 
     flow = Flow.from_client_config(
         client_config, SCOPES
     )
-    flow.redirect_uri = client_config["installed"]["redirect_uris"][0]
+    flow.redirect_uri = "https://transaction-coordinator.streamlit.app"
 
     query_params = st.query_params
     if "code" not in query_params:
+        print("🔁 DEBUG: redirect_uri being sent to Google:", flow.redirect_uri)
         auth_url, _ = flow.authorization_url(prompt='consent')
         st.markdown(f"[Click here to authorize Google Calendar access]({auth_url})")
         st.stop()
