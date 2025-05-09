@@ -56,14 +56,18 @@ def main():
                 print(json.dumps(parsed, indent=2))
 
                 # Add calendar events
+                print(f"📤 Adding: Closing Date → {parsed.get('Closing Date')}")
                 try_add_event("Closing Date", parsed.get("Closing Date"))
+                print(f"📤 Adding: Inspection Deadline → {parsed.get('Inspection Deadline')}")
                 try_add_event("Inspection Deadline", parsed.get("Inspection Deadline"))
+                print(f"📤 Adding: Financing Deadline → {parsed.get('Financing Deadline')}")
                 try_add_event("Financing Deadline", parsed.get("Financing Deadline"))
 
                 # Handle any extra dates
                 other_dates = parsed.get("Other Important Dates", {})
                 if isinstance(other_dates, dict):
                     for label, date in other_dates.items():
+                        print(f"📤 Adding: {label} → {date}")
                         try_add_event(label, date)
 
                 output_path = os.path.join("output", filename + ".json")
