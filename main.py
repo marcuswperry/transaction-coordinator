@@ -3,7 +3,7 @@ import re
 import json
 import pdfplumber
 from dotenv import load_dotenv
-from gpt_tools import analyze_contract_with_gpt
+# from gpt_tools import analyze_contract_with_gpt
 from calendar_tools import add_event_to_calendar
 
 CONTRACTS_FOLDER = "contracts"
@@ -56,12 +56,6 @@ def main():
                 print(json.dumps(parsed, indent=2))
 
                 # Add calendar events
-                def try_add_event(label, date_value):
-                    if date_value and "20" in date_value:
-                        add_event_to_calendar(label, date_value)
-                    else:
-                        print(f"⚠️ Skipped {label}: {date_value}")
-
                 try_add_event("Closing Date", parsed.get("Closing Date"))
                 try_add_event("Inspection Deadline", parsed.get("Inspection Deadline"))
                 try_add_event("Financing Deadline", parsed.get("Financing Deadline"))
