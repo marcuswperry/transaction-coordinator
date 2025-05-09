@@ -65,3 +65,5 @@ def add_event_to_calendar(summary, date_str):
     created_event = service.events().insert(calendarId="primary", body=event).execute()
     print(f"✅ Event created: '{summary}' on {iso_date}")
     print("🔗", created_event.get("htmlLink"))
+    st.write("✅ Event created:")
+    st.markdown(f"[🔗 Open in Google Calendar]({created_event.get('htmlLink')})")
