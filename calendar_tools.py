@@ -47,6 +47,11 @@ def add_event_to_calendar(summary, date_str):
 
     service = build("calendar", "v3", credentials=creds)
 
+    # DEBUG: List available calendars
+    calendar_list = service.calendarList().list().execute()
+    for cal in calendar_list["items"]:
+        print(f"📅 Calendar: {cal['summary']} → ID: {cal['id']}")
+
     # Assume date_str is already ISO-formatted
     iso_date = date_str
 
