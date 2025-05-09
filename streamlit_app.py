@@ -4,7 +4,7 @@ import tempfile
 import json
 
 # from gpt_tools import analyze_contract_with_gpt
-from calendar_tools import add_event_to_calendar
+from calendar_tools_v2 import create_event
 from main import extract_text_from_pdf, extract_json_from_gpt_response, try_add_event
 
 st.set_page_config(page_title="AI Transaction Coordinator", layout="centered")
@@ -50,15 +50,31 @@ if not use_sample_json:
 if parsed and st.button("🗓️ Add Dates to Google Calendar"):
     print("📌 Add to Calendar button clicked")
     print(f"📤 Adding: Closing Date → {parsed.get('Closing Date')}")
-    try_add_event("Closing Date", parsed.get("Closing Date"))
+    link = create_event("Closing Date", parsed.get("Closing Date"))
+    if link:
+        st.markdown(f"[🔗 View 'Closing Date' in Google Calendar]({link})")
+    else:
+        st.warning(f"⚠️ Failed to add 'Closing Date' to calendar.")
     print(f"📤 Adding: Inspection Deadline → {parsed.get('Inspection Deadline')}")
-    try_add_event("Inspection Deadline", parsed.get("Inspection Deadline"))
+    link = create_event("Inspection Deadline", parsed.get("Inspection Deadline"))
+    if link:
+        st.markdown(f"[🔗 View 'Inspection Deadline' in Google Calendar]({link})")
+    else:
+        st.warning(f"⚠️ Failed to add 'Inspection Deadline' to calendar.")
     print(f"📤 Adding: Financing Deadline → {parsed.get('Financing Deadline')}")
-    try_add_event("Financing Deadline", parsed.get("Financing Deadline"))
+    link = create_event("Financing Deadline", parsed.get("Financing Deadline"))
+    if link:
+        st.markdown(f"[🔗 View 'Financing Deadline' in Google Calendar]({link})")
+    else:
+        st.warning(f"⚠️ Failed to add 'Financing Deadline' to calendar.")
 
     other_dates = parsed.get("Other Important Dates", {})
     if isinstance(other_dates, dict):
         for label, date in other_dates.items():
             print(f"📤 Adding: {label} → {date}")
-            try_add_event(label, date)
+            link = create_event(label, date)
+            if link:
+                st.markdown(f"[🔗 View '{label}' in Google Calendar]({link})")
+            else:
+                st.warning(f"⚠️ Failed to add '{label}' to calendar.")
     st.success("✅ Events sent to your Google Calendar.")
