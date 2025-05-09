@@ -5,7 +5,7 @@ import json
 
 # from gpt_tools import analyze_contract_with_gpt
 from calendar_tools_v2 import create_event
-from main import extract_text_from_pdf, extract_json_from_gpt_response, try_add_event
+from main import extract_text_from_pdf, extract_json_from_gpt_response
 
 st.set_page_config(page_title="AI Transaction Coordinator", layout="centered")
 
