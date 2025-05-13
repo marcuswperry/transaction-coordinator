@@ -20,13 +20,13 @@ def get_google_credentials():
         else:
             if 'code' in st.experimental_get_query_params():
                 code = st.experimental_get_query_params()['code'][0]
-                flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+                flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES, redirect_uri='https://transaction-coordinator.streamlit.app')
                 flow.fetch_token(code=code)
                 creds = flow.credentials
                 st.session_state['credentials'] = creds
                 st.experimental_set_query_params()  # Clear query params
             else:
-                flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+                flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES, redirect_uri='https://transaction-coordinator.streamlit.app')
                 auth_url, _ = flow.authorization_url(prompt='consent')
                 st.markdown(f"Please [authorize]({auth_url}) to continue.")
                 st.stop()
